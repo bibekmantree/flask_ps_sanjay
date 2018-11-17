@@ -61,4 +61,30 @@ def get_book_byid(bid):
     return jsonify(return_book)
 
 
+# GET /books/id
+@app.route('/books/<int:bid>', methods=['PUT'])
+def update_book(bid):
+    request_data = request.get_json()
+    new_book = {
+        "name": request_data["name"],
+        "bid": bid
+    }
+    for id, book in enumerate(books):
+        if book['bid'] == bid:
+            books[id] = new_book
+
+    response = Response("", 201)
+    return response
+
+
+# DELETE /books/id
+@app.route('/books/<int:bid>', methods=['DELETE'])
+def delete_book(bid):
+    for id, book in enumerate(books):
+        if book["bid"] == bid:
+            books.pop(id)
+
+    return ""
+
+
 app.run(port=5000)
