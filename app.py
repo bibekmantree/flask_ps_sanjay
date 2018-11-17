@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, Response
+from libs import validate_book_obj
 
 app = Flask(__name__)
 
@@ -20,6 +21,27 @@ books = [
 @app.route('/')
 def hello_root():
     return "Hello Root"
+
+
+# POST /books
+
+@app.route('/books', methods=['POST'])
+def add_book():
+    request_data = request.get_json()
+    flag = validate_book_obj(request_data)
+    if flag:
+        new_book = {
+            "name": request_data["name"],
+            "price": request_data["price"],
+            "bid": request_data["bid"]
+        }
+        books.insert(0, new_book)
+        response = Response("", 201, mimetype='application/json')
+        response.headers['Location'] = "/books/" + str(new_book["bid"])
+        return response
+    else:
+        response = Response("Invalid input", status=400, mimetype='application/json')
+        return response
 
 
 # GET /books
